@@ -21,7 +21,7 @@ public class ScreenGame implements Screen {
 
     Texture imgBG;
     Texture imgSoldierAtlas;
-    TextureRegion imgSoldier;
+    TextureRegion[] imgSoldier = new TextureRegion[8];
 
     BattleButton btnBack;
 
@@ -36,7 +36,9 @@ public class ScreenGame implements Screen {
 
         imgBG = new Texture("bg6.jpg");
         imgSoldierAtlas = new Texture("Soldiers.png");
-        imgSoldier = new TextureRegion(imgSoldierAtlas, 0, 0, 256, 256);
+        for (int i = 0; i < imgSoldier.length; i++){
+            imgSoldier[i] = new TextureRegion(imgSoldierAtlas, (i<5?i:8-i)*256, 0, 256, 256);
+        }
 
         btnBack = new BattleButton(font, "x", 840, 1580);
 
@@ -59,10 +61,12 @@ public class ScreenGame implements Screen {
             }
         }
 
+        soldier.move();
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(imgBG, 0, 0, SCR_WIDTH, SCR_HEIGHT);
-        batch.draw(imgSoldier, soldier.scrX(), soldier.scrY(), soldier.width, soldier.height);
+        batch.draw(imgSoldier[soldier.phase], soldier.scrX(), soldier.scrY(), soldier.width, soldier.height);
         btnBack.font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         batch.end();
     }
