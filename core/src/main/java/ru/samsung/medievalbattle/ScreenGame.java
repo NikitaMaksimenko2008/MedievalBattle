@@ -14,12 +14,14 @@ import com.badlogic.gdx.math.Vector3;
 
 public class ScreenGame implements Screen {
 
+
     private final Main main;
     private final SpriteBatch batch;
     private final OrthographicCamera camera;
     private final Vector3 touch;
     private final BitmapFont font;
 
+    Texture imgJoystick;
     Texture imgBG;
     Texture imgSoldierAtlas;
     TextureRegion[] imgSoldier = new TextureRegion[8];
@@ -36,6 +38,7 @@ public class ScreenGame implements Screen {
         font = main.fontLight;
         Gdx.input.setInputProcessor(new MedievalProcessor());
 
+        imgJoystick = new Texture("joystick.png");
         imgBG = new Texture("bg6.jpg");
         imgSoldierAtlas = new Texture("Soldiers.png");
         for (int i = 0; i < imgSoldier.length; i++){
@@ -69,6 +72,9 @@ public class ScreenGame implements Screen {
         batch.begin();
         batch.draw(imgBG, 0, 0, SCR_WIDTH, SCR_HEIGHT);
         batch.draw(imgSoldier[soldier.phase], soldier.scrX(), soldier.scrY(), soldier.width, soldier.height);
+        if(controls == JOYSTICK){
+            batch.draw(imgJoystick, joystickX-JOYSTICK_WIDTH/2, joystickY-JOYSTICK_HEIGHT/2, JOYSTICK_WIDTH, JOYSTICK_HEIGHT);
+        }
         btnBack.font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         batch.end();
     }
@@ -117,10 +123,15 @@ public class ScreenGame implements Screen {
 
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+            touch.set(screenX, screenY, 0);
+            camera.unproject(touch);
             if(controls == SCREEN){
-                touch.set(screenX, screenY, 0);
-                camera.unproject(touch);
-                soldier.touch(touch);
+                soldier.touchScreen(touch);
+            }
+            if(controls == JOYSTICK) {
+                if (isInsideJoystick()) {
+                    soldier.touchJoystick(touch);
+                }
             }
             return false;
         }
@@ -138,10 +149,15 @@ public class ScreenGame implements Screen {
 
         @Override
         public boolean touchDragged(int screenX, int screenY, int pointer) {
+            touch.set(screenX, screenY, 0);
+            camera.unproject(touch);
             if(controls == SCREEN){
-                touch.set(screenX, screenY, 0);
-                camera.unproject(touch);
-                soldier.touch(touch);
+                soldier.touchScreen(touch);
+            }
+            if(controls == JOYSTICK) {
+                if (isInsideJoystick()) {
+                    soldier.touchJoystick(touch);
+                }
             }
             return false;
         }
@@ -154,6 +170,10 @@ public class ScreenGame implements Screen {
         @Override
         public boolean scrolled(float amountX, float amountY) {
             return false;
+        }
+
+        private boolean isInsideJoystick(){
+            return Math.pow(touch.x-joystickX, 2) + Math.pow(touch.y-joystickY, 2) <= Math.pow(JOYSTICK_WIDTH / 2, 2);
         }
     }
 }

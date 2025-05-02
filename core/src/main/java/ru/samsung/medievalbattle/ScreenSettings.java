@@ -59,19 +59,18 @@ public class ScreenSettings implements Screen {
                 btnJoystick.setFont(fontLight);
                 controls = SCREEN;
             }
-            if(btnJoystick.hit(touch)){
-                btnScreen.setFont(fontLight);
-                btnJoystick.setFont(fontLightRed);
-                /*if(controls == JOYSTICK_LEFT || controls == JOYSTICK_RIGHT){
-                    if(controls == JOYSTICK_LEFT){
-                        controls = JOYSTICK_RIGHT;
-                        btnJoystick.setText("Joystick RIGHT");
-                    } else{
-                        controls = JOYSTICK_LEFT;
-                        btnJoystick.setText("Joystick LEFT");
-                    }
-                }*/
-                controls = JOYSTICK_LEFT;
+            if(controls == JOYSTICK) {
+                if(isJoystickLeft){
+                    isJoystickLeft = false;
+                    btnJoystick.setText("Joystick RIGHT");
+                    joystickX = SCR_WIDTH- JOYSTICK_WIDTH /2;
+                } else {
+                    isJoystickLeft = true;
+                    btnJoystick.setText("Joystick LEFT");
+                    joystickX = JOYSTICK_WIDTH /2;
+                }
+            } else {
+                controls = JOYSTICK;
             }
             if(btnBack.hit(touch.x, touch.y)){
                 main.setScreen(main.screenMenu);
