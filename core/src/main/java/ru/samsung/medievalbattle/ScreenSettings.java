@@ -25,6 +25,7 @@ public class ScreenSettings implements Screen {
     BattleButton btnControls;
     BattleButton btnScreen;
     BattleButton btnJoystick;
+    BattleButton btnSound;
     BattleButton btnBack;
 
     public ScreenSettings(Main main) {
@@ -40,6 +41,7 @@ public class ScreenSettings implements Screen {
         btnControls = new BattleButton(fontLight, "Controls", 170, 1300);
         btnScreen = new BattleButton(fontLightRed, "Screen", 270, 1200);
         btnJoystick = new BattleButton(fontLight, joystickText(), 270, 1100);
+        btnSound = new BattleButton(fontLight, isSoundOn ? "Sound ON" : "Sound OFF", 270, 1000);
         btnBack = new BattleButton(fontLight, "Back", 450);
     }
 
@@ -69,6 +71,10 @@ public class ScreenSettings implements Screen {
                     controls = JOYSTICK;
                 }
             }
+            if (btnSound.hit(touch.x, touch.y)){
+                isSoundOn = !isSoundOn;
+                btnSound.setText(isSoundOn ? "Sound ON" : "Sound OFF");
+            }
             if(btnBack.hit(touch.x, touch.y)){
                 main.setScreen(main.screenMenu);
             }
@@ -81,6 +87,7 @@ public class ScreenSettings implements Screen {
         btnControls.font.draw(batch, btnControls.text, btnControls.x, btnControls.y);
         btnScreen.font.draw(batch, btnScreen.text, btnScreen.x, btnScreen.y);
         btnJoystick.font.draw(batch, btnJoystick.text, btnJoystick.x, btnJoystick.y);
+        btnSound.font.draw(batch, btnSound.text, btnSound.x, btnSound.y);
         btnBack.font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         batch.end();
     }
@@ -109,8 +116,11 @@ public class ScreenSettings implements Screen {
     public void dispose() {
 
     }
-
     private String joystickText() {
         return main.joystick.side == RIGHT ? "Joystick RIGHT" : "Joystick LEFT";
+    }
+
+    private String SoundText() {
+        return isSoundOn ? "Sound ON" : "Sound OFF";
     }
 }

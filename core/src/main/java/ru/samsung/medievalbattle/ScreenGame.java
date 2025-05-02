@@ -5,6 +5,8 @@ import static ru.samsung.medievalbattle.Main.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -33,14 +35,18 @@ public class ScreenGame implements Screen {
     TextureRegion imgShot;
     TextureRegion[][] imgEnemy = new TextureRegion[3][8];
 
+    Music sndMarch;
+    Sound sndDie;
+    Sound sndBow;
+
     BattleButton btnBack;
 
     Soldier soldier;
     List<Enemy> enemies = new ArrayList<>();
     List<Shot> shots = new ArrayList<>();
 
-    private long timeLastSpawnEnemy, timeSpawnEnemyInterval = 4000;
-    private long timeLastSpawnShot, timeSpawnShotsInterval = 1000;
+    private long timeLastSpawnEnemy, timeSpawnEnemyInterval = 1300;
+    private long timeLastSpawnShot, timeSpawnShotsInterval = 2000;
 
     public ScreenGame(Main main) {
         this.main = main;
@@ -53,8 +59,8 @@ public class ScreenGame implements Screen {
         imgJoystick = new Texture("joystick.png");
         imgBG = new Texture("bg6.jpg");
         imgSoldierAtlas = new Texture("Soldiers.png");
-        imgShotAtlas = new Texture("strela.png");
-        imgShot = new TextureRegion(imgShotAtlas, 0, 0, 1080, 1080);
+        imgShotAtlas = new Texture("strela1.png");
+        imgShot = new TextureRegion(imgShotAtlas, 0, 0, 215, 991);
         for (int i = 0; i < imgSoldier.length; i++){
             imgSoldier[i] = new TextureRegion(imgSoldierAtlas, (i<5?i:8-i)*256, 0, 256, 256);
         }
@@ -63,6 +69,10 @@ public class ScreenGame implements Screen {
                 imgEnemy[j][i] = new TextureRegion(imgSoldierAtlas, (i<5?i:8-i)*256, (j+1)*256, 256, 256);
             }
         }
+
+        sndMarch = Gdx.audio.newMusic(Gdx.files.internal("sol.mp3"));
+        sndDie = Gdx.audio.newSound(Gdx.files.internal("die.mp3"));
+        sndBow= Gdx.audio.newSound(Gdx.files.internal("shot.mp3"));
 
 
         btnBack = new BattleButton(font, "x", 840, 1580);
@@ -77,24 +87,45 @@ public class ScreenGame implements Screen {
 
     @Override
     public void render(float delta) {
-        if(Gdx.input.justTouched()){
+        if (Gdx.input.justTouched()) {
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touch);
 
-            if(btnBack.hit(touch)){
+            if (btnBack.hit(touch)) {
                 main.setScreen(main.screenMenu);
             }
         }
 
         spawnEnemy();
-        for (Enemy e: enemies) e.move();
+        for (Enemy e : enemies) e.move();
         spawnShot();
-        for (Shot s: shots) s.move();
+        for (int i = shots.size() - 1; i >= 0; i--) {
+            shots.get(i).move();
+            if (shots.get(i).outOfScreen()) shots.remove(i);
+        }
+
+        for (int i = shots.size() - 1; i >= 0; i--) {
+            for (int j = enemies.size() - 1; j >= 0; j--) {
+                if(shots.get(i).overlap(enemies.get(j))){
+                    if (--enemies.get(j).hp == 0) {
+                        enemies.remove(j);
+                    }
+                    shots.remove(i);
+                    if (isSoundOn) {
+                        sndDie.play();
+                    }
+                    break;
+                }
+            }
+        }
         soldier.move();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(imgBG, 0, 0, SCR_WIDTH, SCR_HEIGHT);
+        if (isSoundOn) {
+            sndMarch.play();
+        }
         if(controls == JOYSTICK){
             batch.draw(imgJoystick, main.joystick.scrX(), main.joystick.scrY(), main.joystick.width, main.joystick.height);
         }
@@ -106,8 +137,12 @@ public class ScreenGame implements Screen {
         }
         batch.draw(imgSoldier[soldier.phase], soldier.scrX(), soldier.scrY(), soldier.width, soldier.height);
         btnBack.font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
+        if (btnBack.hit(touch)) {
+            sndMarch.stop();
+        }
         batch.end();
     }
+
 
     @Override
     public void resize(int width, int height) {
@@ -145,6 +180,9 @@ public class ScreenGame implements Screen {
         if(TimeUtils.millis()>timeLastSpawnShot+timeSpawnShotsInterval){
             timeLastSpawnShot = TimeUtils.millis();
             shots.add(new Shot(soldier.x-25, soldier.y+30));
+            if (isSoundOn) {
+            sndBow.play();
+            }
         }
     }
 
