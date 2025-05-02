@@ -50,13 +50,13 @@ public class Soldier extends Object{
     }
 
     public void touch(float tx,  float ty){
-        vx = (tx-x) / 400;
-        vy = (ty-y) / 400;
+        vx = (tx-x) / 250;
+        vy = (ty-y) / 250;
     }
 
     public void touch(Vector3 t){
-        vx = (t.x-x) / 400;
-        vy = (t.y-y) / 400;
+        vx = (t.x-x) / 250;
+        vy = (t.y-y) / 250;
     }
 
     public void stop(){

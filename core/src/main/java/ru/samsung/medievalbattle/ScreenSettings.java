@@ -1,7 +1,6 @@
 package ru.samsung.medievalbattle;
 
-import static ru.samsung.medievalbattle.Main.SCR_HEIGHT;
-import static ru.samsung.medievalbattle.Main.SCR_WIDTH;
+import static ru.samsung.medievalbattle.Main.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -10,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Align;
 
 public class ScreenSettings implements Screen {
 
@@ -17,10 +17,14 @@ public class ScreenSettings implements Screen {
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private Vector3 touch;
-    private BitmapFont font;
+    private BitmapFont fontLight;
+    private BitmapFont fontLightRed;
 
     Texture imgBG;
 
+    BattleButton btnControls;
+    BattleButton btnScreen;
+    BattleButton btnJoystick;
     BattleButton btnBack;
 
     public ScreenSettings(Main main) {
@@ -28,11 +32,15 @@ public class ScreenSettings implements Screen {
         batch = main.batch;
         camera = main.camera;
         touch = main.touch;
-        font = main.font;
+        fontLight = main.fontLight;
+        fontLightRed = main.fontLightRed;
 
         imgBG = new Texture("bg4.jpg");
 
-        btnBack = new BattleButton(font, "Back", 325, 400);
+        btnControls = new BattleButton(fontLight, "Controls", 300, 1300);
+        btnScreen = new BattleButton(fontLightRed, "Screen", 340, 1200);
+        btnJoystick = new BattleButton(fontLight, "Joystick LEFT", 340, 1100);
+        btnBack = new BattleButton(fontLight, "Back", 450);
     }
 
     @Override
@@ -46,6 +54,25 @@ public class ScreenSettings implements Screen {
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touch);
 
+            if(btnScreen.hit(touch)){
+                btnScreen.setFont(fontLightRed);
+                btnJoystick.setFont(fontLight);
+                controls = SCREEN;
+            }
+            if(btnJoystick.hit(touch)){
+                btnScreen.setFont(fontLight);
+                btnJoystick.setFont(fontLightRed);
+                /*if(controls == JOYSTICK_LEFT || controls == JOYSTICK_RIGHT){
+                    if(controls == JOYSTICK_LEFT){
+                        controls = JOYSTICK_RIGHT;
+                        btnJoystick.setText("Joystick RIGHT");
+                    } else{
+                        controls = JOYSTICK_LEFT;
+                        btnJoystick.setText("Joystick LEFT");
+                    }
+                }*/
+                controls = JOYSTICK_LEFT;
+            }
             if(btnBack.hit(touch.x, touch.y)){
                 main.setScreen(main.screenMenu);
             }
@@ -54,7 +81,10 @@ public class ScreenSettings implements Screen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(imgBG, 0, 0, SCR_WIDTH, SCR_HEIGHT);
-        font.draw(batch,"Settings", 300, 1500);
+        fontLight.draw(batch,"Settings", 0, 1500, SCR_WIDTH, Align.center, true);
+        btnControls.font.draw(batch, btnControls.text, btnControls.x, btnControls.y);
+        btnScreen.font.draw(batch, btnScreen.text, btnScreen.x, btnScreen.y);
+        btnJoystick.font.draw(batch, btnJoystick.text, btnJoystick.x, btnJoystick.y);
         btnBack.font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         batch.end();
     }

@@ -33,7 +33,7 @@ public class ScreenGame implements Screen {
         batch = main.batch;
         camera = main.camera;
         touch = main.touch;
-        font = main.font;
+        font = main.fontLight;
         Gdx.input.setInputProcessor(new MedievalProcessor());
 
         imgBG = new Texture("bg6.jpg");
@@ -117,9 +117,11 @@ public class ScreenGame implements Screen {
 
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            touch.set(screenX, screenY, 0);
-            camera.unproject(touch);
-            soldier.touch(touch);
+            if(controls == SCREEN){
+                touch.set(screenX, screenY, 0);
+                camera.unproject(touch);
+                soldier.touch(touch);
+            }
             return false;
         }
 
@@ -136,9 +138,11 @@ public class ScreenGame implements Screen {
 
         @Override
         public boolean touchDragged(int screenX, int screenY, int pointer) {
-            touch.set(screenX, screenY, 0);
-            camera.unproject(touch);
-            soldier.touch(touch);
+            if(controls == SCREEN){
+                touch.set(screenX, screenY, 0);
+                camera.unproject(touch);
+                soldier.touch(touch);
+            }
             return false;
         }
 
