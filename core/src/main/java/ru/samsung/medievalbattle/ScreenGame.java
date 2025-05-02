@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class ScreenGame implements Screen {
 
     private long timeLastSpawnEnemy, timeSpawnEnemyInterval = 4000;
     private long timeLastSpawnShot, timeSpawnShotsInterval = 2000;
+
+    private boolean isGameOver;
 
     public ScreenGame(Main main) {
         this.main = main;
@@ -97,8 +100,16 @@ public class ScreenGame implements Screen {
         }
 
         spawnEnemy();
-        for (Enemy e : enemies) e.move();
-        spawnShot();
+        for (int i = enemies.size()-1; i >= 0; i--) {
+            enemies.get(i).move();
+            if(enemies.get(i).outOfScreen()){
+                enemies.remove(i);
+            }
+            if(enemies.get(i).overlap(soldier)){
+                enemies.remove(i);
+                if(!isGameOver) gameOver();
+            }
+        }
         for (int i = shots.size() - 1; i >= 0; i--) {
             shots.get(i).move();
             if (shots.get(i).outOfScreen()) shots.remove(i);
@@ -119,7 +130,11 @@ public class ScreenGame implements Screen {
                 }
             }
         }
-        soldier.move();
+        if(!isGameOver){
+            soldier.move();
+            spawnShot();
+
+        }
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -138,6 +153,9 @@ public class ScreenGame implements Screen {
         }
         batch.draw(imgSoldier[soldier.phase], soldier.scrX(), soldier.scrY(), soldier.width, soldier.height);
         font.draw(batch, "Kills: "+main.player.kills, 10, 1580);
+        if(isGameOver){
+            font.draw(batch, "GAME OVER", 0, 1300, SCR_WIDTH, Align.center, true);
+        }
         btnBack.font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         if (btnBack.hit(touch)) {
             sndMarch.stop();
@@ -169,6 +187,14 @@ public class ScreenGame implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    private void gameOver(){
+        if (isSoundOn) {
+            sndDie.play();
+        }
+        isGameOver = true;
+        soldier.x = -10000;
     }
 
     private void spawnEnemy(){

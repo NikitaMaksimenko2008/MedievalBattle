@@ -3,6 +3,7 @@ package ru.samsung.medievalbattle;
 import static ru.samsung.medievalbattle.Main.*;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -39,9 +40,9 @@ public class ScreenSettings implements Screen {
         imgBG = new Texture("bg4.jpg");
 
         btnControls = new BattleButton(fontLight, "Controls", 170, 1300);
-        btnScreen = new BattleButton(fontLightRed, "Screen", 270, 1200);
-        btnJoystick = new BattleButton(fontLight, joystickText(), 270, 1100);
-        btnSound = new BattleButton(fontLight, isSoundOn ? "Sound ON" : "Sound OFF", 270, 1000);
+        btnScreen = new BattleButton(controls == SCREEN?fontLightRed:fontLight, "Screen", 270, 1200);
+        btnJoystick = new BattleButton(controls == JOYSTICK?fontLightRed:fontLight, joystickText(), 270, 1100);
+        btnSound = new BattleButton(fontLight, isSoundOn ? "Sound ON" : "Sound OFF", 200, 1000);
         btnBack = new BattleButton(fontLight, "Back", 450);
     }
 
@@ -109,7 +110,7 @@ public class ScreenSettings implements Screen {
 
     @Override
     public void hide() {
-
+        saveSettings();
     }
 
     @Override
@@ -122,5 +123,13 @@ public class ScreenSettings implements Screen {
 
     private String SoundText() {
         return isSoundOn ? "Sound ON" : "Sound OFF";
+    }
+
+    private void saveSettings() {
+        Preferences prefs = Gdx.app.getPreferences("MedievalBattleSettings");
+        prefs.putBoolean("Joystick", main.joystick.side);
+        prefs.putBoolean("Sound", isSoundOn);
+        prefs.putInteger("Controls", controls);
+        prefs.flush();
     }
 }
