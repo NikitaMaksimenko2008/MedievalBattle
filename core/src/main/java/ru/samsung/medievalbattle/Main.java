@@ -28,6 +28,7 @@ public class Main extends Game {
     public ScreenSettings screenSettings;
     public ScreenRules screenRules;
     public ScreenAbout screenAbout;
+    Player player;
 
     @Override
     public void create() {
@@ -40,6 +41,7 @@ public class Main extends Game {
         srf = new BitmapFont(Gdx.files.internal("shrift2.fnt"));
 
         joystick = new Joystick(360, RIGHT);
+        player = new Player();
         screenMenu = new ScreenMenu(this);
         screenGame = new ScreenGame(this);
         screenSettings = new ScreenSettings(this);

@@ -13,10 +13,9 @@ public class Enemy extends Object{
     public Enemy() {
         width = height = 200;
         type = MathUtils.random(0, 2);
-        hp = getHealthTypes(type);
+        enemySettings(type);
         x = MathUtils.random(width/2, SCR_WIDTH-width/2);
         y = MathUtils.random(SCR_HEIGHT+height, SCR_HEIGHT*2);
-        vy = MathUtils.random(-0.5f, -0.25f);
     }
 
     @Override
@@ -32,12 +31,20 @@ public class Enemy extends Object{
         }
     }
 
-    private int getHealthTypes(int type){
+    private void enemySettings(int type){
         switch (type){
-            case 0: return 1;
-            case 1: return 2;
-            case 2: return 3;
+            case 0:
+                hp = 1;
+                vy = MathUtils.random(-0.8f, -0.6f);
+                break;
+            case 1:
+                hp = 2;
+                vy = MathUtils.random(-0.6f, -0.4f);
+                break;
+            case 2:
+                hp = 3;
+                vy = MathUtils.random(-0.5f, -0.20f);
+                break;
         }
-        return 0;
     }
 }

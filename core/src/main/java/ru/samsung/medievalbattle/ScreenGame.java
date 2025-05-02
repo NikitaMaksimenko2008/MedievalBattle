@@ -45,7 +45,7 @@ public class ScreenGame implements Screen {
     List<Enemy> enemies = new ArrayList<>();
     List<Shot> shots = new ArrayList<>();
 
-    private long timeLastSpawnEnemy, timeSpawnEnemyInterval = 1300;
+    private long timeLastSpawnEnemy, timeSpawnEnemyInterval = 4000;
     private long timeLastSpawnShot, timeSpawnShotsInterval = 2000;
 
     public ScreenGame(Main main) {
@@ -108,6 +108,7 @@ public class ScreenGame implements Screen {
             for (int j = enemies.size() - 1; j >= 0; j--) {
                 if(shots.get(i).overlap(enemies.get(j))){
                     if (--enemies.get(j).hp == 0) {
+                        playerKillCounts(enemies.get(j));
                         enemies.remove(j);
                     }
                     shots.remove(i);
@@ -136,6 +137,7 @@ public class ScreenGame implements Screen {
             batch.draw(imgShot, s.scrX(), s.scrY(), s.width, s.height);
         }
         batch.draw(imgSoldier[soldier.phase], soldier.scrX(), soldier.scrY(), soldier.width, soldier.height);
+        font.draw(batch, "Kills: "+main.player.kills, 10, 1580);
         btnBack.font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         if (btnBack.hit(touch)) {
             sndMarch.stop();
@@ -184,6 +186,12 @@ public class ScreenGame implements Screen {
             sndBow.play();
             }
         }
+    }
+
+    private void playerKillCounts(Enemy e){
+        main.player.kills++;
+        main.player.killedType[e.type]++;
+        main.player.score+=e.hp;
     }
 
     class MedievalProcessor implements InputProcessor{
