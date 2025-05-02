@@ -11,6 +11,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.TimeUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ScreenGame implements Screen {
 
@@ -25,10 +29,14 @@ public class ScreenGame implements Screen {
     Texture imgBG;
     Texture imgSoldierAtlas;
     TextureRegion[] imgSoldier = new TextureRegion[8];
+    TextureRegion[][] imgEnemy = new TextureRegion[3][8];
 
     BattleButton btnBack;
 
     Soldier soldier;
+    List<Enemy> enemies = new ArrayList<>();
+
+    private long timeLastSpawnEnemy, timeSpawnEnemyInterval = 1500;
 
     public ScreenGame(Main main) {
         this.main = main;
@@ -44,6 +52,12 @@ public class ScreenGame implements Screen {
         for (int i = 0; i < imgSoldier.length; i++){
             imgSoldier[i] = new TextureRegion(imgSoldierAtlas, (i<5?i:8-i)*256, 0, 256, 256);
         }
+        for (int j = 0; j < imgEnemy.length; j++) {
+            for (int i = 0; i < imgEnemy[j].length; i++){
+                imgEnemy[j][i] = new TextureRegion(imgSoldierAtlas, (i<5?i:8-i)*256, (j+1)*256, 256, 256);
+            }
+        }
+
 
         btnBack = new BattleButton(font, "x", 840, 1580);
 
@@ -66,11 +80,16 @@ public class ScreenGame implements Screen {
             }
         }
 
+        spawnEnemy();
+        for (Enemy e: enemies) e.move();
         soldier.move();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(imgBG, 0, 0, SCR_WIDTH, SCR_HEIGHT);
+        for (Enemy e: enemies) {
+            batch.draw(imgEnemy[e.type][e.phase], e.scrX(), e.scrY(), e.width, e.height);
+        }
         batch.draw(imgSoldier[soldier.phase], soldier.scrX(), soldier.scrY(), soldier.width, soldier.height);
         if(controls == JOYSTICK){
             batch.draw(imgJoystick, joystickX-JOYSTICK_WIDTH/2, joystickY-JOYSTICK_HEIGHT/2, JOYSTICK_WIDTH, JOYSTICK_HEIGHT);
@@ -104,6 +123,12 @@ public class ScreenGame implements Screen {
 
     }
 
+    private void spawnEnemy(){
+        if(TimeUtils.millis()>timeLastSpawnEnemy+timeSpawnEnemyInterval){
+            timeLastSpawnEnemy = TimeUtils.millis();
+            enemies.add(new Enemy());
+        }
+    }
     class MedievalProcessor implements InputProcessor{
 
         @Override

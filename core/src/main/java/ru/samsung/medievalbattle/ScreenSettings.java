@@ -37,9 +37,9 @@ public class ScreenSettings implements Screen {
 
         imgBG = new Texture("bg4.jpg");
 
-        btnControls = new BattleButton(fontLight, "Controls", 300, 1300);
-        btnScreen = new BattleButton(fontLightRed, "Screen", 340, 1200);
-        btnJoystick = new BattleButton(fontLight, "Joystick LEFT", 340, 1100);
+        btnControls = new BattleButton(fontLight, "Controls", 170, 1300);
+        btnScreen = new BattleButton(fontLightRed, "Screen", 270, 1200);
+        btnJoystick = new BattleButton(fontLight, "Joystick LEFT", 270, 1100);
         btnBack = new BattleButton(fontLight, "Back", 450);
     }
 
@@ -60,10 +60,12 @@ public class ScreenSettings implements Screen {
                 controls = SCREEN;
             }
             if(controls == JOYSTICK) {
+                btnScreen.setFont(fontLight);
+                btnJoystick.setFont(fontLightRed);
                 if(isJoystickLeft){
                     isJoystickLeft = false;
                     btnJoystick.setText("Joystick RIGHT");
-                    joystickX = SCR_WIDTH- JOYSTICK_WIDTH /2;
+                    joystickX = SCR_WIDTH-JOYSTICK_WIDTH /2;
                 } else {
                     isJoystickLeft = true;
                     btnJoystick.setText("Joystick LEFT");
