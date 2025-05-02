@@ -1,9 +1,6 @@
 package ru.samsung.medievalbattle;
 
-import static ru.samsung.medievalbattle.Main.SCR_HEIGHT;
-import static ru.samsung.medievalbattle.Main.SCR_WIDTH;
-import static ru.samsung.medievalbattle.Main.joystickX;
-import static ru.samsung.medievalbattle.Main.joystickY;
+import static ru.samsung.medievalbattle.Main.*;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -27,7 +24,7 @@ public class Soldier extends Object{
 
     public void changePhase(){
         if(TimeUtils.millis() > timeLastPhase+timePhaseInterval) {
-            if (++phase == 8) phase = 0;
+            if (++phase == nPhases) phase = 0;
             timeLastPhase = TimeUtils.millis();
         }
     }
@@ -61,9 +58,9 @@ public class Soldier extends Object{
         vy = (t.y-y) / 250;
     }
 
-    public void touchJoystick(Vector3 t){
-        vx = (t.x - joystickX) / 10;
-        vy = (t.y - joystickY) / 10;
+    public void touchJoystick(Vector3 t, Joystick j){
+        vx = (t.x - j.x) / 10;
+        vy = (t.y - j.y) / 10;
     }
 
     public void stop(){

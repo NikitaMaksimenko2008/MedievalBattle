@@ -28,15 +28,19 @@ public class ScreenGame implements Screen {
     Texture imgJoystick;
     Texture imgBG;
     Texture imgSoldierAtlas;
+    Texture imgShotAtlas;
     TextureRegion[] imgSoldier = new TextureRegion[8];
+    TextureRegion imgShot;
     TextureRegion[][] imgEnemy = new TextureRegion[3][8];
 
     BattleButton btnBack;
 
     Soldier soldier;
     List<Enemy> enemies = new ArrayList<>();
+    List<Shot> shots = new ArrayList<>();
 
-    private long timeLastSpawnEnemy, timeSpawnEnemyInterval = 1500;
+    private long timeLastSpawnEnemy, timeSpawnEnemyInterval = 4000;
+    private long timeLastSpawnShot, timeSpawnShotsInterval = 1000;
 
     public ScreenGame(Main main) {
         this.main = main;
@@ -49,6 +53,8 @@ public class ScreenGame implements Screen {
         imgJoystick = new Texture("joystick.png");
         imgBG = new Texture("bg6.jpg");
         imgSoldierAtlas = new Texture("Soldiers.png");
+        imgShotAtlas = new Texture("strela.png");
+        imgShot = new TextureRegion(imgShotAtlas, 0, 0, 1080, 1080);
         for (int i = 0; i < imgSoldier.length; i++){
             imgSoldier[i] = new TextureRegion(imgSoldierAtlas, (i<5?i:8-i)*256, 0, 256, 256);
         }
@@ -82,18 +88,23 @@ public class ScreenGame implements Screen {
 
         spawnEnemy();
         for (Enemy e: enemies) e.move();
+        spawnShot();
+        for (Shot s: shots) s.move();
         soldier.move();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(imgBG, 0, 0, SCR_WIDTH, SCR_HEIGHT);
+        if(controls == JOYSTICK){
+            batch.draw(imgJoystick, main.joystick.scrX(), main.joystick.scrY(), main.joystick.width, main.joystick.height);
+        }
         for (Enemy e: enemies) {
             batch.draw(imgEnemy[e.type][e.phase], e.scrX(), e.scrY(), e.width, e.height);
         }
-        batch.draw(imgSoldier[soldier.phase], soldier.scrX(), soldier.scrY(), soldier.width, soldier.height);
-        if(controls == JOYSTICK){
-            batch.draw(imgJoystick, joystickX-JOYSTICK_WIDTH/2, joystickY-JOYSTICK_HEIGHT/2, JOYSTICK_WIDTH, JOYSTICK_HEIGHT);
+        for (Shot s: shots){
+            batch.draw(imgShot, s.scrX(), s.scrY(), s.width, s.height);
         }
+        batch.draw(imgSoldier[soldier.phase], soldier.scrX(), soldier.scrY(), soldier.width, soldier.height);
         btnBack.font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         batch.end();
     }
@@ -129,6 +140,14 @@ public class ScreenGame implements Screen {
             enemies.add(new Enemy());
         }
     }
+
+    private void spawnShot(){
+        if(TimeUtils.millis()>timeLastSpawnShot+timeSpawnShotsInterval){
+            timeLastSpawnShot = TimeUtils.millis();
+            shots.add(new Shot(soldier.x-25, soldier.y+30));
+        }
+    }
+
     class MedievalProcessor implements InputProcessor{
 
         @Override
@@ -154,8 +173,8 @@ public class ScreenGame implements Screen {
                 soldier.touchScreen(touch);
             }
             if(controls == JOYSTICK) {
-                if (isInsideJoystick()) {
-                    soldier.touchJoystick(touch);
+                if (main.joystick.isTouchInside(touch)) {
+                    soldier.touchJoystick(touch, main.joystick);
                 }
             }
             return false;
@@ -180,8 +199,8 @@ public class ScreenGame implements Screen {
                 soldier.touchScreen(touch);
             }
             if(controls == JOYSTICK) {
-                if (isInsideJoystick()) {
-                    soldier.touchJoystick(touch);
+                if (main.joystick.isTouchInside(touch)) {
+                    soldier.touchJoystick(touch, main.joystick);
                 }
             }
             return false;
@@ -195,10 +214,6 @@ public class ScreenGame implements Screen {
         @Override
         public boolean scrolled(float amountX, float amountY) {
             return false;
-        }
-
-        private boolean isInsideJoystick(){
-            return Math.pow(touch.x-joystickX, 2) + Math.pow(touch.y-joystickY, 2) <= Math.pow(JOYSTICK_WIDTH / 2, 2);
         }
     }
 }

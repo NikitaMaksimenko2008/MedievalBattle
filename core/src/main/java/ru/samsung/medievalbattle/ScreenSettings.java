@@ -39,7 +39,7 @@ public class ScreenSettings implements Screen {
 
         btnControls = new BattleButton(fontLight, "Controls", 170, 1300);
         btnScreen = new BattleButton(fontLightRed, "Screen", 270, 1200);
-        btnJoystick = new BattleButton(fontLight, "Joystick LEFT", 270, 1100);
+        btnJoystick = new BattleButton(fontLight, joystickText(), 270, 1100);
         btnBack = new BattleButton(fontLight, "Back", 450);
     }
 
@@ -59,20 +59,15 @@ public class ScreenSettings implements Screen {
                 btnJoystick.setFont(fontLight);
                 controls = SCREEN;
             }
-            if(controls == JOYSTICK) {
+            if (btnJoystick.hit(touch)) {
                 btnScreen.setFont(fontLight);
                 btnJoystick.setFont(fontLightRed);
-                if(isJoystickLeft){
-                    isJoystickLeft = false;
-                    btnJoystick.setText("Joystick RIGHT");
-                    joystickX = SCR_WIDTH-JOYSTICK_WIDTH /2;
+                if (controls == JOYSTICK) {
+                    main.joystick.setSide(!main.joystick.side);
+                    btnJoystick.setText(joystickText());
                 } else {
-                    isJoystickLeft = true;
-                    btnJoystick.setText("Joystick LEFT");
-                    joystickX = JOYSTICK_WIDTH /2;
+                    controls = JOYSTICK;
                 }
-            } else {
-                controls = JOYSTICK;
             }
             if(btnBack.hit(touch.x, touch.y)){
                 main.setScreen(main.screenMenu);
@@ -113,5 +108,9 @@ public class ScreenSettings implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    private String joystickText() {
+        return main.joystick.side == RIGHT ? "Joystick RIGHT" : "Joystick LEFT";
     }
 }

@@ -10,6 +10,11 @@ public class Object {
         this.y = y;
 
     }
+
+    public Object() {
+
+    }
+
     public void move(){
         x += vx;
         y += vy;

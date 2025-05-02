@@ -14,7 +14,6 @@ public class Enemy extends Object{
     private long timeLastPhase, timePhaseInterval = 300;
 
     public Enemy() {
-        super(0, 0);
         width = height = 200;
         health = 1;
         type = MathUtils.random(0, 2);
