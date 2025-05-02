@@ -2,6 +2,7 @@ package ru.samsung.medievalbattle;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Vector3;
 
 public class BattleButton {
     BitmapFont font;
@@ -21,5 +22,9 @@ public class BattleButton {
 
     boolean hit(float tx, float ty){
         return x<tx && tx<x+width && y>ty && ty>y-height;
+    }
+
+    boolean hit(Vector3 t){
+        return x<t.x && t.x<x+width && y>t.y && t.y>y-height;
     }
 }

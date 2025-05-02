@@ -3,6 +3,7 @@ package ru.samsung.medievalbattle;
 import static ru.samsung.medievalbattle.Main.*;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -33,6 +34,7 @@ public class ScreenGame implements Screen {
         camera = main.camera;
         touch = main.touch;
         font = main.font;
+        Gdx.input.setInputProcessor(new MedievalProcessor());
 
         imgBG = new Texture("bg6.jpg");
         imgSoldierAtlas = new Texture("Soldiers.png");
@@ -56,7 +58,7 @@ public class ScreenGame implements Screen {
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touch);
 
-            if(btnBack.hit(touch.x, touch.y)){
+            if(btnBack.hit(touch)){
                 main.setScreen(main.screenMenu);
             }
         }
@@ -94,5 +96,59 @@ public class ScreenGame implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    class MedievalProcessor implements InputProcessor{
+
+        @Override
+        public boolean keyDown(int keycode) {
+            return false;
+        }
+
+        @Override
+        public boolean keyUp(int keycode) {
+            return false;
+        }
+
+        @Override
+        public boolean keyTyped(char character) {
+            return false;
+        }
+
+        @Override
+        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+            touch.set(screenX, screenY, 0);
+            camera.unproject(touch);
+            soldier.touch(touch);
+            return false;
+        }
+
+        @Override
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            return false;
+        }
+
+        @Override
+        public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+            return false;
+        }
+
+        @Override
+        public boolean touchDragged(int screenX, int screenY, int pointer) {
+            touch.set(screenX, screenY, 0);
+            camera.unproject(touch);
+            soldier.touch(touch);
+            return false;
+        }
+
+        @Override
+        public boolean mouseMoved(int screenX, int screenY) {
+            return false;
+        }
+
+        @Override
+        public boolean scrolled(float amountX, float amountY) {
+            return false;
+        }
     }
 }
