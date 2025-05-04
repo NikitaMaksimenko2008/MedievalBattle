@@ -26,6 +26,9 @@ public class ScreenSettings implements Screen {
     BattleButton btnControls;
     BattleButton btnScreen;
     BattleButton btnJoystick;
+    BattleButton btnShooting;
+    BattleButton btnPeriodically;
+    BattleButton btnByButton;
     BattleButton btnSound;
     BattleButton btnBack;
 
@@ -38,11 +41,11 @@ public class ScreenSettings implements Screen {
         fontLightRed = main.fontLightRed;
 
         imgBG = new Texture("bg4.jpg");
-
+        loadSettings();
         btnControls = new BattleButton(fontLight, "Controls", 170, 1300);
         btnScreen = new BattleButton(controls == SCREEN?fontLightRed:fontLight, "Screen", 270, 1200);
         btnJoystick = new BattleButton(controls == JOYSTICK?fontLightRed:fontLight, joystickText(), 270, 1100);
-        btnSound = new BattleButton(fontLight, isSoundOn ? "Sound ON" : "Sound OFF", 200, 1000);
+        btnSound = new BattleButton(fontLightRed, isSoundOn ? "Sound ON" : "Sound OFF", 200, 800);
         btnBack = new BattleButton(fontLight, "Back", 450);
     }
 
@@ -66,7 +69,7 @@ public class ScreenSettings implements Screen {
                 btnScreen.setFont(fontLight);
                 btnJoystick.setFont(fontLightRed);
                 if (controls == JOYSTICK) {
-                    main.joystick.setSide(!main.joystick.side);
+                    main.screenGame.joystick.setSide(!main.screenGame.joystick.side);
                     btnJoystick.setText(joystickText());
                 } else {
                     controls = JOYSTICK;
@@ -115,10 +118,10 @@ public class ScreenSettings implements Screen {
 
     @Override
     public void dispose() {
-
+        imgBG.dispose();
     }
     private String joystickText() {
-        return main.joystick.side == RIGHT ? "Joystick RIGHT" : "Joystick LEFT";
+        return main.screenGame.joystick.side == RIGHT ? "Joystick RIGHT" : "Joystick LEFT";
     }
 
     private String SoundText() {
@@ -127,9 +130,15 @@ public class ScreenSettings implements Screen {
 
     private void saveSettings() {
         Preferences prefs = Gdx.app.getPreferences("MedievalBattleSettings");
-        prefs.putBoolean("Joystick", main.joystick.side);
+        prefs.putBoolean("Joystick", main.screenGame.joystick.side);
         prefs.putBoolean("Sound", isSoundOn);
         prefs.putInteger("Controls", controls);
         prefs.flush();
+    }
+    private void loadSettings() {
+        Preferences prefs = Gdx.app.getPreferences("MedievalBattleSettings");
+        controls = prefs.getInteger("Controls", SCREEN);
+        main.screenGame.joystick.setSide(prefs.getBoolean("Joystick", RIGHT));
+        isSoundOn = prefs.getBoolean("Sound", true);
     }
 }

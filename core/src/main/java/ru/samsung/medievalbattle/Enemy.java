@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 public class Enemy extends Object{
     public int hp;
+    public int price;
     public int phase, nPhases = 8;
     private long timeLastPhase, timePhaseInterval = 300;
 
@@ -39,14 +40,17 @@ public class Enemy extends Object{
         switch (type){
             case 0:
                 hp = 1;
+                price = 1;
                 vy = MathUtils.random(-0.8f, -0.6f);
                 break;
             case 1:
                 hp = 2;
+                price = 2;
                 vy = MathUtils.random(-0.6f, -0.4f);
                 break;
             case 2:
                 hp = 3;
+                price = 3;
                 vy = MathUtils.random(-0.5f, -0.20f);
                 break;
         }

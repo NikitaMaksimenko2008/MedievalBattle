@@ -41,7 +41,6 @@ public class ScreenMenu implements Screen {
         btnLeaderBoard = new BattleButton(font, "Rules", 250, 800);
         btnAbout = new BattleButton(font, "About", 250, 700);
         btnExit = new BattleButton(font, "Exit", 250, 600);
-        loadSettings();
     }
 
     @Override
@@ -89,14 +88,6 @@ public class ScreenMenu implements Screen {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void loadSettings() {
-        Preferences prefs = Gdx.app.getPreferences("MedievalBattleSettings");
-        controls = prefs.getInteger("Controls", SCREEN);
-        main.joystick.setSide(prefs.getBoolean("Joystick", RIGHT));
-        isSoundOn = prefs.getBoolean("Sound", true);
-        prefs.flush();
     }
 
     @Override

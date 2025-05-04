@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.PerformanceCounter;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class ScreenGame implements Screen {
     private final Vector3 touch;
     private final BitmapFont font;
 
+    Joystick joystick;
     Texture imgJoystick;
     Texture imgBG;
     Texture imgSoldierAtlas;
@@ -46,7 +48,7 @@ public class ScreenGame implements Screen {
     List<Enemy> enemies = new ArrayList<>();
     List<Shot> shots = new ArrayList<>();
 
-    private long timeLastSpawnEnemy, timeSpawnEnemyInterval = 4000;
+    private long timeLastSpawnEnemy, timeSpawnEnemyInterval = 3000;
     private long timeLastSpawnShot, timeSpawnShotsInterval = 2000;
 
     private boolean isGameOver;
@@ -58,6 +60,7 @@ public class ScreenGame implements Screen {
         touch = main.touch;
         font = main.fontLight;
         Gdx.input.setInputProcessor(new MedievalProcessor());
+        joystick = new Joystick(360, RIGHT);
 
         imgJoystick = new Texture("joystick.png");
         imgBG = new Texture("bg6.jpg");
@@ -85,7 +88,12 @@ public class ScreenGame implements Screen {
 
     @Override
     public void show() {
-
+        isGameOver = false;
+        soldier = new Soldier(SCR_WIDTH/2, 200);
+        main.player.score = 0;
+        main.player.kills = 0;
+        enemies.clear();
+        shots.clear();
     }
 
     @Override
@@ -143,7 +151,7 @@ public class ScreenGame implements Screen {
             sndMarch.play();
         }
         if(controls == JOYSTICK){
-            batch.draw(imgJoystick, main.joystick.scrX(), main.joystick.scrY(), main.joystick.width, main.joystick.height);
+            batch.draw(imgJoystick, joystick.scrX(), joystick.scrY(), joystick.width, joystick.height);
         }
         for (Enemy e: enemies) {
             batch.draw(imgEnemy[e.type][e.phase], e.scrX(), e.scrY(), e.width, e.height);
@@ -152,7 +160,8 @@ public class ScreenGame implements Screen {
             batch.draw(imgShot, s.scrX(), s.scrY(), s.width, s.height);
         }
         batch.draw(imgSoldier[soldier.phase], soldier.scrX(), soldier.scrY(), soldier.width, soldier.height);
-        font.draw(batch, "Kills: "+main.player.kills, 10, 1580);
+        font.draw(batch, "Score: "+main.player.score, 10, 1580);
+        font.draw(batch, "Kills: "+main.player.kills, 10, 1500);
         if(isGameOver){
             font.draw(batch, "GAME OVER", 0, 1300, SCR_WIDTH, Align.center, true);
         }
@@ -186,7 +195,13 @@ public class ScreenGame implements Screen {
 
     @Override
     public void dispose() {
-
+        imgShotAtlas.dispose();
+        imgSoldierAtlas.dispose();
+        imgJoystick.dispose();
+        imgBG.dispose();
+        sndMarch.dispose();
+        sndDie.dispose();
+        sndBow.dispose();
     }
 
     private void gameOver(){
@@ -217,8 +232,10 @@ public class ScreenGame implements Screen {
     private void playerKillCounts(Enemy e){
         main.player.kills++;
         main.player.killedType[e.type]++;
-        main.player.score+=e.hp;
+        main.player.score+=e.price;
     }
+
+
 
     class MedievalProcessor implements InputProcessor{
 
@@ -245,8 +262,8 @@ public class ScreenGame implements Screen {
                 soldier.touchScreen(touch);
             }
             if(controls == JOYSTICK) {
-                if (main.joystick.isTouchInside(touch)) {
-                    soldier.touchJoystick(touch, main.joystick);
+                if (joystick.isTouchInside(touch)) {
+                    soldier.touchJoystick(touch, joystick);
                 }
             }
             return false;
@@ -271,8 +288,8 @@ public class ScreenGame implements Screen {
                 soldier.touchScreen(touch);
             }
             if(controls == JOYSTICK) {
-                if (main.joystick.isTouchInside(touch)) {
-                    soldier.touchJoystick(touch, main.joystick);
+                if (joystick.isTouchInside(touch)) {
+                    soldier.touchJoystick(touch, joystick);
                 }
             }
             return false;

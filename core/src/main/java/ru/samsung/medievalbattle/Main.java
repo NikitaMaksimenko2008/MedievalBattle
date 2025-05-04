@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Main extends Game {
     public static final float SCR_WIDTH = 900;
     public static final float SCR_HEIGHT = 1600;
-    public static final int SCREEN = 0, JOYSTICK = 1, ACCELEROMETER = 2;
+    public static final int SCREEN = 0, JOYSTICK = 1;
     public static final boolean LEFT = false, RIGHT = true;
     public static int controls = SCREEN;
     public static boolean isSoundOn = true;
@@ -22,7 +22,7 @@ public class Main extends Game {
     public BitmapFont fontLightRed;
     public BitmapFont srf;
 
-    Joystick joystick;
+
     public ScreenMenu screenMenu;
     public ScreenGame screenGame;
     public ScreenSettings screenSettings;
@@ -40,7 +40,6 @@ public class Main extends Game {
         fontLightRed = new BitmapFont(Gdx.files.internal("shrift3.fnt"));
         srf = new BitmapFont(Gdx.files.internal("shrift2.fnt"));
 
-        joystick = new Joystick(360, RIGHT);
         player = new Player();
         screenMenu = new ScreenMenu(this);
         screenGame = new ScreenGame(this);
